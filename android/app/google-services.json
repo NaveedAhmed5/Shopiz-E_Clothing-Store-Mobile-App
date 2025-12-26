@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "675428563732",
+    "project_id": "shopiz-app-backend",
+    "storage_bucket": "shopiz-app-backend.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675428563732:android:ef98713f61de11bf76e001",
+        "android_client_info": {
+          "package_name": "com.example.shopiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhcfYEdft5ysvRCcBX1go2cO6wgUuiaFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
