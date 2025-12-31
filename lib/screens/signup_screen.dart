@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../constants.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -7,24 +8,23 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Get.back(),
         ),
         title: const Text(
           "Create Account",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(25.0),
         children: [
-          // UPDATED: Added Logo at the top
           Center(
             child: Image.asset('assets/images/Shopiz_Logo.png', height: 80),
           ),
@@ -34,13 +34,13 @@ class SignupScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0056D2),
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 10),
-          Text(
+          const Text(
             "Enter your details to get started",
-            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
           ),
           const SizedBox(height: 30),
 
@@ -68,7 +68,7 @@ class SignupScreen extends StatelessWidget {
               // Logic for Signup will go here
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0056D2),
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -86,16 +86,16 @@ class SignupScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 "Already have an account? ",
-                style: TextStyle(color: Colors.grey[700]),
+                style: TextStyle(color: AppColors.textSecondary),
               ),
               GestureDetector(
                 onTap: () => Get.back(),
                 child: const Text(
                   "Log In",
                   style: TextStyle(
-                    color: Color(0xFF0056D2),
+                    color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -114,23 +114,25 @@ class SignupScreen extends StatelessWidget {
   }) {
     return TextField(
       obscureText: isPassword,
+      style: const TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.grey),
+        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        prefixIcon: Icon(icon, color: AppColors.textSecondary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: const BorderSide(color: AppColors.divider),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: const BorderSide(color: AppColors.divider),
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: Color(0xFF0056D2), width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.surface,
       ),
     );
   }
