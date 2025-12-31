@@ -485,9 +485,9 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildPremiumCategoriesSection() {
     final categories = [
-      {"name": "Men", "icon": Icons.man},
-      {"name": "Women", "icon": Icons.woman},
-      {"name": "Juniors", "icon": Icons.child_care},
+      {"name": "Men", "image": "assets/images/men_category.png"},
+      {"name": "Women", "image": "assets/images/women_category.png"},
+      {"name": "Juniors", "image": "assets/images/juniors_category.png"},
     ];
 
     return SizedBox(
@@ -511,8 +511,11 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.secondary, width: 2),
+                    image: DecorationImage(
+                      image: AssetImage(cat["image"] as String),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  child: Icon(cat["icon"] as IconData, color: AppColors.secondary, size: 36),
                 ),
                 const SizedBox(height: 12),
                 Text(

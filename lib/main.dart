@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // Dark background
+      backgroundColor: AppColors.primary, // Dark background
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -74,12 +74,13 @@ class _SplashScreenState extends State<SplashScreen> {
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(100),
                 child: Image.asset(
                   'assets/images/Shopiz_Logo.png',
                   height: 120,
                   width: 120,
                   fit: BoxFit.cover,
+                  color: AppColors.secondary,
                 ),
               ),
             ),
@@ -89,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen> {
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary, // Blue text
+                color: AppColors.secondary, // Blue text
                 letterSpacing: 2,
               ),
             ),
