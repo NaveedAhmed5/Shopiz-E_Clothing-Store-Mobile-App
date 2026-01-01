@@ -242,12 +242,12 @@ class CartScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("My Cart", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
+        title: const Text("My Cart", style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.primary,
         elevation: 0,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: AppColors.primary),
-        automaticallyImplyLeading: false, 
+        automaticallyImplyLeading: false, // Hidden since it's a tab
+        iconTheme: const IconThemeData(color: AppColors.secondary),
       ),
       body: Obx(() {
         if (controller.cartItems.isEmpty) {
