@@ -173,22 +173,6 @@ class HomeScreen extends StatelessWidget {
           color: AppColors.secondary,
         ),
       ),
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 16),
-          child: GestureDetector(
-            onTap: () => Get.to(() => const LoginScreen()),
-            child: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.secondary, width: 1.5),
-              ),
-              child: const Icon(Icons.person_outline, color: AppColors.secondary, size: 24),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -505,8 +489,8 @@ class HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 75,
-                  height: 75,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
@@ -522,7 +506,7 @@ class HomeScreen extends StatelessWidget {
                   cat["name"] as String, 
                   style: GoogleFonts.lato(
                     fontWeight: FontWeight.w600, 
-                    fontSize: 14, 
+                    fontSize: 12, 
                     color: Colors.black87,
                   ),
                 ),
@@ -608,7 +592,16 @@ class HomeScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: featuredProducts.map((product) {
-          return Container(
+          return GestureDetector(
+            onTap: () {
+              // Find the full product details from ShoppingController
+              final realProduct = shopController.allProducts.firstWhere(
+                (p) => p.name == product["name"],
+                orElse: () => shopController.allProducts.first, // Fallback safety
+              );
+              Get.to(() => ItemViewScreen(product: realProduct));
+            },
+            child: Container(
             width: 110,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -667,6 +660,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           );
         }).toList(),
       ),

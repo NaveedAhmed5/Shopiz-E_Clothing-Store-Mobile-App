@@ -6,10 +6,19 @@ import 'firebase_options.dart';
 import 'screens/main_screen.dart'; 
 import 'constants.dart';
 
+import 'controllers/order_controller.dart';
+import 'controllers/address_controller.dart';
+import 'controllers/payment_controller.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // Register Controllers Globally
+  Get.put(OrderController());
+  Get.put(AddressController());
+  Get.put(PaymentController());
 
   runApp(const MyApp());
 }

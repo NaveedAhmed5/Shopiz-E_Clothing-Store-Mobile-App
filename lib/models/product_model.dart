@@ -18,7 +18,8 @@ class Product {
   
   final List<String> sizes;
   final List<Color> colors;
-  final double rating;
+  final double rating; // This will now be calculated dynamically or kept as base
+  final List<Review> reviews; // New field
   final DateTime dateAdded;
 
   Product({
@@ -35,6 +36,7 @@ class Product {
     required this.sizes,
     required this.colors,
     required this.rating,
+    this.reviews = const [], // Default empty list
     required this.dateAdded,
   });
   
@@ -46,4 +48,20 @@ class Product {
     if (!isOnSale) return 0;
     return ((originalPrice! - price) / originalPrice! * 100).round();
   }
+}
+
+class Review {
+  final String id;
+  final String userName;
+  final double rating;
+  final String comment;
+  final DateTime date;
+
+  Review({
+    required this.id,
+    required this.userName,
+    required this.rating,
+    required this.comment,
+    required this.date,
+  });
 }

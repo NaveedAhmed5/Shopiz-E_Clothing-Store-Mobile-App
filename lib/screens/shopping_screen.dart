@@ -14,6 +14,7 @@ class ShoppingController extends GetxController {
   
   // Filter Settings
   final RxString searchQuery = ''.obs;
+  final RxBool isSearchActive = false.obs; // Added for Search Toggle
   final RxDouble minPrice = 0.0.obs;
   final RxDouble maxPrice = 500.0.obs;
   final RxList<String> selectedGenders = <String>[].obs;
@@ -28,7 +29,7 @@ class ShoppingController extends GetxController {
     "Sweatshirts & Hoodies", "Sweaters & Cardigans", "Sweaters",
     "Jackets & Coats", "Jackets", "Jackets & Over Shirts", "Coat & Blazers",
     "Jeans", "Trousers", "Shorts", "Skirts & Shorts", "Dresses & Jumpsuits", "Suits", "Co-ord Sets", 
-    "Activewear", "Activewears",
+    "Activewear",
     "Shoes", "Socks",
     "Bags", "Accessories", "Jewellery",
     "Watches", "Perfumes", "Belts"
@@ -40,6 +41,14 @@ class ShoppingController extends GetxController {
     generateDummyProducts();
   }
 
+  void toggleSearch() {
+    isSearchActive.value = !isSearchActive.value;
+    if (!isSearchActive.value) {
+      searchQuery.value = ''; // Clear search when closed
+      applyFilters();
+    }
+  }
+
   void resetFilters() {
     searchQuery.value = '';
     minPrice.value = 0.0;
@@ -47,7 +56,7 @@ class ShoppingController extends GetxController {
     selectedGenders.clear();
     selectedFilters.clear(); // Clear unified filters
     
-    if (allProducts.isEmpty) generateDummyProducts();
+    // if (allProducts.isEmpty) generateDummyProducts();
     applyFilters(); 
   }
 
@@ -69,7 +78,7 @@ class ShoppingController extends GetxController {
   }
 
   void applyFilters() {
-    if (allProducts.isEmpty) generateDummyProducts();
+    // if (allProducts.isEmpty) generateDummyProducts();
 
     var temp = allProducts.where((p) {
       // 1. Search Query
@@ -137,37 +146,37 @@ class ShoppingController extends GetxController {
   get selectedCategories => selectedFilters; 
 
   void generateDummyProducts() {
-    if (allProducts.isNotEmpty) return;
+    // if (allProducts.isNotEmpty) return; // Removed to force update during development
 
     final List<Product> dummy = [
       // --- MEN ---
       Product(
         id: '1', name: "Men's Classic Polo", description: "Premium cotton.", price: 25.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Polo"], 
+        imageUrls: ["assets/images/mens_classic_polo.png"], 
         gender: "Men", category: "Clothes", subCategory: "Polo's", season: "Summer",
         sizes: ["M", "L"], colors: [Colors.blue], rating: 4.5, dateAdded: DateTime.now()
       ),
       Product(
         id: '2', name: "Slim Fit Jeans", description: "Dark wash.", price: 45.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Jeans"], 
+        imageUrls: ["assets/images/slim_fit_jeans.png"], 
         gender: "Men", category: "Clothes", subCategory: "Jeans", season: "All-Season",
         sizes: ["32", "34"], colors: [Colors.blueAccent], rating: 4.7, dateAdded: DateTime.now().subtract(const Duration(days: 1))
       ),
       Product(
         id: '3', name: "Gold Analog Watch", description: "Classic timepiece.", price: 150.0, originalPrice: 200.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Watch"], 
+        imageUrls: ["assets/images/gold_analog_watch.png"], 
         gender: "Men", category: "Watches", subCategory: "Watches", season: "All-Season",
         sizes: [], colors: [Colors.amber], rating: 4.9, dateAdded: DateTime.now().subtract(const Duration(days: 2))
       ),
       Product(
         id: '4', name: "Leather Belt", description: "Genuine leather.", price: 35.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Belt"], 
+        imageUrls: ["assets/images/leather_belt.png"], 
         gender: "Men", category: "Belts", subCategory: "Accessories", season: "All-Season",
         sizes: [], colors: [Colors.brown], rating: 4.6, dateAdded: DateTime.now().subtract(const Duration(days: 10))
       ),
       Product(
         id: '12', name: "Men's Hoodie", description: "Fleece lined.", price: 55.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Hoodie"], 
+        imageUrls: ["assets/images/mens_hoodie.png"], 
         gender: "Men", category: "Clothes", subCategory: "Sweatshirts & Hoodies", season: "Winter",
         sizes: ["L", "XL"], colors: [Colors.grey], rating: 4.8, dateAdded: DateTime.now()
       ),
@@ -175,25 +184,25 @@ class ShoppingController extends GetxController {
       // --- WOMEN ---
       Product(
         id: '6', name: "Floral Dress", description: "Summer vibes.", price: 45.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Dress"], 
+        imageUrls: ["assets/images/floral_dress.png"], 
         gender: "Women", category: "Clothes", subCategory: "Dresses & Jumpsuits", season: "Summer",
         sizes: ["S", "M"], colors: [Colors.pink], rating: 4.2, dateAdded: DateTime.now().subtract(const Duration(days: 5))
       ),
       Product(
         id: '8', name: "Yoga Leggings", description: "High stretch.", price: 30.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Activewear"], 
+        imageUrls: ["assets/images/yoga_leggings.png"], 
         gender: "Women", category: "Clothes", subCategory: "Activewear", season: "All-Season",
         sizes: ["S", "M"], colors: [Colors.black], rating: 4.5, dateAdded: DateTime.now().subtract(const Duration(days: 4))
       ),
       Product(
         id: '9', name: "Eau de Parfum", description: "Rose & Jasmine.", price: 85.0, originalPrice: 100.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Perfume"], 
+        imageUrls: ["assets/images/eau_de_parfum.png"], 
         gender: "Women", category: "Perfumes", subCategory: "Fragrances", season: "All-Season",
         sizes: ["50ml"], colors: [], rating: 4.9, dateAdded: DateTime.now()
       ),
       Product(
         id: '13', name: "Co-ord Set", description: "Matching top and bottom.", price: 60.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Coord"], 
+        imageUrls: ["assets/images/coord_set.png"], 
         gender: "Women", category: "Clothes", subCategory: "Co-ord Sets", season: "Summer",
         sizes: ["M"], colors: [Colors.green], rating: 4.4, dateAdded: DateTime.now()
       ),
@@ -201,27 +210,51 @@ class ShoppingController extends GetxController {
       // --- JUNIORS (Updated with specific genders) ---
       Product(
         id: '10', name: "Kids Graphic Tee", description: "100% Cotton.", price: 15.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Tee"], 
+        imageUrls: ["assets/images/kids_graphic_tee.png"], 
         gender: "Juniors (Boy)", category: "Clothes", subCategory: "T-Shirts", season: "Summer",
         sizes: ["6Y", "8Y"], colors: [Colors.red], rating: 4.4, dateAdded: DateTime.now()
       ),
       Product(
         id: '11', name: "Boys Jacket", description: "Rugged outerwear.", price: 40.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Jacket"], 
+        imageUrls: ["assets/images/boys_jacket.png"], 
         gender: "Juniors (Boy)", category: "Clothes", subCategory: "Jackets & Coats", season: "Winter",
         sizes: ["10Y", "12Y"], colors: [Colors.blue], rating: 4.6, dateAdded: DateTime.now()
       ),
       Product(
         id: '14', name: "Girls Summer Dress", description: "Floral pattern.", price: 25.0,
-        imageUrls: ["https://via.placeholder.com/300?text=GirlDress"], 
+        imageUrls: ["assets/images/girls_summer_dress.png"], 
         gender: "Juniors (Girl)", category: "Clothes", subCategory: "Dresses & Jumpsuits", season: "Summer",
         sizes: ["6Y", "8Y"], colors: [Colors.pinkAccent], rating: 4.5, dateAdded: DateTime.now()
       ),
       Product(
         id: '15', name: "Baby Romper", description: "Soft cotton.", price: 12.0,
-        imageUrls: ["https://via.placeholder.com/300?text=Romper"], 
+        imageUrls: ["assets/images/baby_romper.png"], 
         gender: "Juniors (Boy)", category: "Clothes", subCategory: "Baby Clothes", season: "All-Season",
         sizes: ["3M", "6M"], colors: [Colors.blue[100]!], rating: 4.8, dateAdded: DateTime.now()
+      ),
+
+      // --- FEATURED PRODUCTS (Added for Home Screen Link) ---
+      Product(
+        id: '16', name: "Cashmere Sweater", description: "Luxurious softness for winter comfort.", price: 120.0,
+        imageUrls: ["assets/images/cashmere_sweater.png"], 
+        gender: "Women", category: "Clothes", subCategory: "Sweaters", season: "Winter",
+        sizes: ["S", "M", "L"], colors: [Colors.brown.shade100], rating: 4.8, dateAdded: DateTime.now(),
+        reviews: [
+          Review(id: 'r1', userName: "Alice", rating: 5.0, comment: "Absolutely love the soft texture!", date: DateTime.now().subtract(const Duration(days: 2))),
+          Review(id: 'r2', userName: "Sarah", rating: 4.5, comment: "Great fit, very warm.", date: DateTime.now().subtract(const Duration(days: 5))),
+        ]
+      ),
+      Product(
+        id: '17', name: "Leather Boots", description: "Premium leather ankle boots.", price: 150.0,
+        imageUrls: ["assets/images/leather_boots.png"], 
+        gender: "Women", category: "Shoes", subCategory: "Boots", season: "Winter",
+        sizes: ["38", "39", "40"], colors: [Colors.brown], rating: 4.8, dateAdded: DateTime.now()
+      ),
+      Product(
+        id: '18', name: "Silk Scarf", description: "Elegant printed silk scarf.", price: 45.0,
+        imageUrls: ["assets/images/silk_scarf.png"], 
+        gender: "Women", category: "Accessories", subCategory: "Scarves", season: "All-Season",
+        sizes: ["One Size"], colors: [Colors.redAccent], rating: 4.7, dateAdded: DateTime.now()
       ),
     ];
     
@@ -242,37 +275,53 @@ class ShoppingScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       endDrawer: _buildFilterDrawer(controller),
       appBar: AppBar(
-        title: const Text("Shopiz Store", style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.surface,
+        title: Obx(() => controller.isSearchActive.value
+          ? TextField(
+              style: const TextStyle(color: AppColors.secondary),
+              cursorColor: AppColors.secondary,
+              decoration: const InputDecoration(
+                hintText: "Search products...",
+                hintStyle: TextStyle(color: Colors.white54),
+                border: InputBorder.none,
+              ),
+              onChanged: (val) {
+                controller.searchQuery.value = val;
+                controller.applyFilters();
+              },
+            )
+          : const Text("Shopiz Store", style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.bold))),
+        backgroundColor: AppColors.primary, // Red AppBar
         elevation: 0,
         automaticallyImplyLeading: false, 
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: const IconThemeData(color: AppColors.secondary), // Gold Icons
         actions: [
-          IconButton(icon: const Icon(Icons.search, color: AppColors.textPrimary), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.shopping_cart_outlined, color: AppColors.textPrimary), onPressed: () {}),
+          IconButton(
+            icon: Obx(() => Icon(controller.isSearchActive.value ? Icons.close : Icons.search, color: AppColors.secondary)), 
+            onPressed: () => controller.toggleSearch(),
+          ),
         ],
       ),
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            color: AppColors.surface,
+            color: AppColors.primary, // Red Filter Bar to match AppBar
             child: Row(
               children: [
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.divider),
+                      border: Border.all(color: AppColors.secondary), // Gold Border
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Obx(() => DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: controller.sortBy.value,
                         isExpanded: true,
-                        dropdownColor: AppColors.surface,
-                        icon: const Icon(Icons.sort, size: 20, color: AppColors.textPrimary),
-                        style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                        dropdownColor: AppColors.primary, // Red Dropdown
+                        icon: const Icon(Icons.sort, size: 20, color: AppColors.secondary), // Gold Icon
+                        style: const TextStyle(color: AppColors.secondary, fontSize: 14), // Gold Text
                         items: ['Newest', 'Price: Low to High', 'Price: High to Low']
                             .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                             .toList(),
@@ -284,7 +333,7 @@ class ShoppingScreen extends StatelessWidget {
                 const SizedBox(width: 10),
                 Builder(
                   builder: (context) => IconButton(
-                    icon: const Icon(Icons.filter_list, color: AppColors.textPrimary),
+                    icon: const Icon(Icons.filter_list, color: AppColors.secondary), // Gold Icon
                     onPressed: () => Scaffold.of(context).openEndDrawer(),
                     tooltip: "Filter",
                   ),
@@ -292,7 +341,7 @@ class ShoppingScreen extends StatelessWidget {
                 Obx(() => IconButton(
                   icon: Icon(controller.isGridView.value ? Icons.view_list : Icons.grid_view),
                   onPressed: () => controller.toggleView(),
-                  color: AppColors.primary,
+                  color: AppColors.secondary, // Gold Icon
                 )),
               ],
             ),
@@ -352,9 +401,9 @@ class ShoppingScreen extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Colors.white, // White Card for readability
           borderRadius: BorderRadius.circular(15),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 5, spreadRadius: 1)],
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5, spreadRadius: 1)],
         ),
         child: isGrid
             ? Column(
@@ -405,14 +454,16 @@ class ShoppingScreen extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.grey[800],
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(15), // Rounded all corners since we clip or use shape
             image: DecorationImage(
-              image: NetworkImage(product.imageUrls.first), 
+              image: product.imageUrls.first.startsWith('http')
+                  ? NetworkImage(product.imageUrls.first)
+                  : AssetImage(product.imageUrls.first) as ImageProvider,
               fit: BoxFit.cover,
             ),
           ),
-          child: const Center(child: Icon(Icons.image_not_supported, color: Colors.grey)), 
+          /* child: const Center(child: Icon(Icons.image_not_supported, color: Colors.grey)), */ // Removed icon to avoid clutter if image fails (NetworkImage handles it gracefully usually or use errorBuilder)
         ),
         if (product.isOnSale)
           Positioned(
@@ -420,8 +471,8 @@ class ShoppingScreen extends StatelessWidget {
             left: 10,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(5)),
-              child: Text("-${product.discountPercent}%", style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+              decoration: BoxDecoration(color: AppColors.secondary, borderRadius: BorderRadius.circular(5)), // Gold Sale Tag
+              child: Text("-${product.discountPercent}%", style: const TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.bold)),
             ),
           ),
       ],
@@ -431,7 +482,7 @@ class ShoppingScreen extends StatelessWidget {
   Widget _buildPriceRow(Product product) {
     return Row(
       children: [
-        Text("\$${product.price}", style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 16)),
+        Text("\$${product.price}", style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 16)), // Red Price
         if (product.isOnSale) ...[
           const SizedBox(width: 8),
           Text("\$${product.originalPrice}", style: const TextStyle(color: AppColors.textSecondary, decoration: TextDecoration.lineThrough, fontSize: 12)),
@@ -441,10 +492,11 @@ class ShoppingScreen extends StatelessWidget {
   }
 
   // --- UPDATED FILTER SIDE DRAWER WITH EXPANSION TILES ---
+  // --- UPDATED FILTER SIDE DRAWER WITH EXPANSION TILES ---
   Widget _buildFilterDrawer(ShoppingController controller) {
     return Drawer(
       width: 300,
-      backgroundColor: AppColors.surface,
+      backgroundColor: Colors.white, // White Drawer for cleanliness
       child: SafeArea(
         child: Column(
           children: [
@@ -467,7 +519,7 @@ class ShoppingScreen extends StatelessWidget {
                 children: [
                   // 1. Gender Filter (Dropdown)
                   Theme(
-                    data: ThemeData.dark().copyWith(dividerColor: Colors.transparent),
+                    data: ThemeData.light().copyWith(dividerColor: Colors.transparent), // Light theme for white bg
                     child: ExpansionTile(
                       title: const Text("Gender", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
                       initiallyExpanded: true,
@@ -494,7 +546,7 @@ class ShoppingScreen extends StatelessWidget {
 
                   // 2. Category Filter (Dropdown)
                   Theme(
-                    data: ThemeData.dark().copyWith(dividerColor: Colors.transparent),
+                    data: ThemeData.light().copyWith(dividerColor: Colors.transparent),
                     child: ExpansionTile(
                       title: const Text("Categories", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
                       initiallyExpanded: false,
@@ -521,7 +573,7 @@ class ShoppingScreen extends StatelessWidget {
 
                   // 3. Price Slider (Dropdown)
                   Theme(
-                    data: ThemeData.dark().copyWith(dividerColor: Colors.transparent),
+                    data: ThemeData.light().copyWith(dividerColor: Colors.transparent),
                     child: ExpansionTile(
                       title: const Text("Price Range", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary)),
                       initiallyExpanded: true,
@@ -538,7 +590,7 @@ class ShoppingScreen extends StatelessWidget {
                                 max: 500,
                                 divisions: 10,
                                 activeColor: AppColors.primary,
-                                inactiveColor: Colors.grey[800],
+                                inactiveColor: Colors.grey[300],
                                 labels: RangeLabels("\$${controller.minPrice.value}", "\$${controller.maxPrice.value}"),
                                 onChanged: (RangeValues values) {
                                   controller.minPrice.value = values.start;
@@ -568,8 +620,12 @@ class ShoppingScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => Get.back(),
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.all(15)),
-                  child: const Text("Apply Filters", style: TextStyle(fontSize: 16, color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary, 
+                    padding: const EdgeInsets.all(15),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text("Apply Filters", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
             )

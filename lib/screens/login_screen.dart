@@ -2,21 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'signup_screen.dart';
 import '../constants.dart';
+import 'profile_screen.dart'; // Import to access ProfileController
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Find ProfileController if it exists (it should, from Profile Page)
+    // If not, put it (though main flow ensures it's there)
+    ProfileController? profileController;
+    try {
+      profileController = Get.find<ProfileController>();
+    } catch (e) {
+      // Fallback
+    }
+
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.textTertiary),
-          onPressed: () => Get.back(),
-        ),
+        // Only show close button if we can pop (e.g. opened as dialog vs embedded in tab)
+        leading: Navigator.canPop(context) 
+          ? IconButton(
+              icon: const Icon(Icons.close, color: AppColors.textTertiary),
+              onPressed: () => Get.back(),
+            )
+          : null,
       ),
       body: ListView(
         padding: const EdgeInsets.all(25.0),
@@ -89,7 +102,13 @@ class LoginScreen extends StatelessWidget {
           const SizedBox(height: 30),
 
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+               if (profileController != null) {
+                  profileController.login(); // This will trigger ProfileScreen rebuild
+               } else {
+                 Get.snackbar("Error", "Controller not found");
+               }
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary, // Gold button
               foregroundColor: AppColors.primary,   // Red text for contrast

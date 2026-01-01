@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/product_model.dart';
 import '../constants.dart';
+import 'wishlist_screen.dart'; // Import Wishlist Controller
+import 'cart_screen.dart'; // Import Cart Controller
 
 // --- CONTROLLER (LOGIC) ---
 class ItemViewController extends GetxController {
@@ -11,9 +13,18 @@ class ItemViewController extends GetxController {
   final RxString selectedSize = ''.obs;
   final RxInt selectedColorIndex = 0.obs;
   final RxInt quantity = 1.obs;
+
+  // Review Logic
+  late RxList<Review> reviews;
+  final RxDouble currentRating = 0.0.obs;
+  final TextEditingController reviewController = TextEditingController();
+  final RxDouble userRating = 5.0.obs; // Default 5 stars
   
+  // Dependency Injection
+  final CartController cartController = Get.put(CartController());
+
   ItemViewController(this.product);
-  
+
   @override
   void onInit() {
     super.onInit();
@@ -25,6 +36,21 @@ class ItemViewController extends GetxController {
     if (product.colors.isNotEmpty) {
       selectedColorIndex.value = 0;
     }
+
+    // Initialize Reviews
+    reviews = (product.reviews).obs; 
+    currentRating.value = product.rating;
+    
+    // If no reviews but we have a rating, we can just respect the base rating.
+    if (reviews.isNotEmpty) {
+      _calculateAverageRating();
+    }
+  }
+
+  void _calculateAverageRating() {
+    if (reviews.isEmpty) return;
+    double total = reviews.fold(0, (sum, item) => sum + item.rating);
+    currentRating.value = total / reviews.length;
   }
   
   void incrementQuantity() {
@@ -36,29 +62,48 @@ class ItemViewController extends GetxController {
       quantity.value--;
     }
   }
-  
-  void addToCart() {
-    // TODO: Implement cart functionality
-    Get.snackbar(
-      'Added to Cart',
-      '${product.name} has been added to your cart',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.success,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
+
+  void submitReview() {
+    if (reviewController.text.trim().isEmpty) {
+      Get.snackbar("Error", "Please write a comment", backgroundColor: AppColors.error, colorText: Colors.white);
+      return;
+    }
+
+    final newReview = Review(
+      id: DateTime.now().toString(),
+      userName: "You", // Hardcoded for now
+      rating: userRating.value,
+      comment: reviewController.text.trim(),
+      date: DateTime.now(),
     );
+
+    reviews.insert(0, newReview); // Add to top
+    _calculateAverageRating();
+    
+    reviewController.clear();
+    userRating.value = 5.0;
+    Get.back(); // Close dialog/bottom sheet if open
+    Get.snackbar("Success", "Review submitted!", backgroundColor: AppColors.success, colorText: Colors.white);
+  }
+
+  void addToCart() {
+    if (product.sizes.isNotEmpty && selectedSize.value.isEmpty) {
+      Get.snackbar("Select Size", "Please select a size first", backgroundColor: AppColors.error, colorText: Colors.white);
+      return;
+    }
+    
+    cartController.addToCart(
+      product,
+      selectedSize.value,
+      selectedColorIndex.value,
+      quantity.value,
+    );
+     // Optional: Feedback is handled in controller, but we can dismiss or navigate here if needed
   }
   
   void buyNow() {
-    // TODO: Implement buy now functionality
-    Get.snackbar(
-      'Buy Now',
-      'Proceeding to checkout...',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.primary,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-    );
+    addToCart();
+    Get.to(() => const CartScreen()); 
   }
 }
 
@@ -71,25 +116,31 @@ class ItemViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ItemViewController controller = Get.put(ItemViewController(product));
+    final WishlistController wishlistController = Get.put(WishlistController()); 
     
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white, 
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Get.back(),
         ),
+        title: const Text("Details", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_outlined, color: AppColors.textPrimary),
+            icon: const Icon(Icons.share_outlined, color: AppColors.primary),
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.favorite_border, color: AppColors.textPrimary),
-            onPressed: () {},
-          ),
+          Obx(() => IconButton(
+            icon: Icon(
+              wishlistController.isWishlisted(product) ? Icons.favorite : Icons.favorite_border,
+              color: AppColors.primary,
+            ),
+            onPressed: () => wishlistController.toggleWishlist(product),
+          )),
         ],
       ),
       body: Column(
@@ -112,7 +163,9 @@ class ItemViewScreen extends StatelessWidget {
                   _buildProductDetails(controller),
                   const SizedBox(height: 20),
                   _buildDescription(controller),
-                  const SizedBox(height: 100), // Space for bottom buttons
+                   const SizedBox(height: 20),
+                  _buildReviewsSection(context, controller),
+                  const SizedBox(height: 100), 
                 ],
               ),
             ),
@@ -133,20 +186,15 @@ class ItemViewScreen extends StatelessWidget {
             onPageChanged: (index) => controller.currentImageIndex.value = index,
             itemBuilder: (context, index) {
               return Container(
-                color: Colors.grey[900],
-                child: Image.network(
-                  product.imageUrls[index],
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Icon(Icons.image_not_supported, size: 100, color: Colors.grey[700]),
-                  ),
-                ),
+                color: Colors.grey[100],
+                child: product.imageUrls[index].startsWith('http')
+                    ? Image.network(product.imageUrls[index], fit: BoxFit.cover, errorBuilder: (c,e,s) => const Icon(Icons.error))
+                    : Image.asset(product.imageUrls[index], fit: BoxFit.cover, errorBuilder: (c,e,s) => const Center(child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey))),
               );
             },
           ),
         ),
         
-        // Discount Badge
         if (product.isOnSale)
           Positioned(
             top: 20,
@@ -154,13 +202,13 @@ class ItemViewScreen extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.error,
+                color: AppColors.secondary,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 '-${product.discountPercent}% OFF',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.primary, 
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -168,7 +216,6 @@ class ItemViewScreen extends StatelessWidget {
             ),
           ),
         
-        // Page Indicator
         if (product.imageUrls.length > 1)
           Positioned(
             bottom: 20,
@@ -184,7 +231,7 @@ class ItemViewScreen extends StatelessWidget {
                   height: 8,
                   decoration: BoxDecoration(
                     color: controller.currentImageIndex.value == index
-                        ? AppColors.primary
+                        ? AppColors.secondary 
                         : Colors.white.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -207,30 +254,30 @@ class ItemViewScreen extends StatelessWidget {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: AppColors.primary, 
             ),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.star, color: Colors.amber, size: 20),
+              const Icon(Icons.star, color: AppColors.secondary, size: 20), 
               const SizedBox(width: 4),
-              Text(
-                product.rating.toString(),
+              Obx(() => Text(
+                controller.currentRating.value.toStringAsFixed(1),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
-              ),
+              )),
               const SizedBox(width: 4),
-              Text(
-                '(${(product.rating * 100).toInt()} reviews)',
+              Obx(() => Text(
+                '(${controller.reviews.length} reviews)', 
                 style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
-              ),
+              )),
             ],
           ),
           const SizedBox(height: 12),
@@ -289,17 +336,18 @@ class ItemViewScreen extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : AppColors.surface,
+                    color: isSelected ? AppColors.primary : Colors.white,
                     border: Border.all(
                       color: isSelected ? AppColors.primary : AppColors.divider,
-                      width: 2,
+                      width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(8),
+                    boxShadow: isSelected ? [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 4)] : [],
                   ),
                   child: Text(
                     size,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected ? AppColors.secondary : AppColors.textPrimary, 
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -343,8 +391,8 @@ class ItemViewScreen extends StatelessWidget {
                     color: product.colors[index],
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.divider,
-                      width: isSelected ? 3 : 2,
+                      color: isSelected ? AppColors.secondary : Colors.grey[300]!, 
+                      width: isSelected ? 3 : 1,
                     ),
                   ),
                   child: isSelected
@@ -493,15 +541,161 @@ class ItemViewScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildReviewsSection(BuildContext context, ItemViewController controller) {
+     return Padding(
+       padding: const EdgeInsets.symmetric(horizontal: 20),
+       child: Column(
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: [
+           Row(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             children: [
+               const Text(
+                 'Reviews',
+                 style: TextStyle(
+                   fontSize: 18,
+                   fontWeight: FontWeight.bold,
+                   color: AppColors.textPrimary,
+                 ),
+               ),
+               TextButton.icon(
+                 onPressed: () => _showAddReviewDialog(context, controller), 
+                 icon: const Icon(Icons.rate_review, color: AppColors.primary, size: 20),
+                 label: const Text("Write a Review", style: TextStyle(color: AppColors.primary)),
+               ),
+             ],
+           ),
+           const SizedBox(height: 10),
+           Obx(() {
+             if (controller.reviews.isEmpty) {
+               return const Padding(
+                 padding: EdgeInsets.symmetric(vertical: 20),
+                 child: Text("No reviews yet. Be the first to review!", style: TextStyle(color: Colors.grey)),
+               );
+             }
+             return Column(
+               children: controller.reviews.map((review) => Container(
+                 margin: const EdgeInsets.only(bottom: 12), 
+                 padding: const EdgeInsets.all(12),
+                 decoration: BoxDecoration(
+                   color: Colors.grey[50], 
+                   borderRadius: BorderRadius.circular(10),
+                   border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                 ),
+                 child: Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   children: [
+                     Row(
+                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                       children: [
+                         Text(review.userName, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                         Text(
+                             "${review.date.day}/${review.date.month}/${review.date.year}", 
+                             style: const TextStyle(fontSize: 12, color: Colors.grey)
+                         ),
+                       ],
+                     ),
+                     const SizedBox(height: 4),
+                     Row(
+                       children: List.generate(5, (index) {
+                         return Icon(
+                           index < review.rating ? Icons.star : Icons.star_border,
+                           size: 16,
+                           color: AppColors.secondary,
+                         );
+                       }),
+                     ),
+                     const SizedBox(height: 8),
+                     Text(review.comment, style: const TextStyle(color: AppColors.textPrimary)),
+                   ],
+                 ),
+               )).toList(),
+             );
+           }),
+         ],
+       ),
+     );
+  }
+
+  void _showAddReviewDialog(BuildContext context, ItemViewController controller) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text("Write a Review", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary), textAlign: TextAlign.center),
+              const SizedBox(height: 20),
+              
+              const Text("Your Rating", style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+              const SizedBox(height: 10),
+              Center(
+                child: Obx(() => Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(5, (index) {
+                    return IconButton(
+                      icon: Icon(
+                        index < controller.userRating.value ? Icons.star : Icons.star_border,
+                        color: AppColors.secondary,
+                        size: 32,
+                      ),
+                      onPressed: () => controller.userRating.value = index + 1.0,
+                    );
+                  }),
+                )),
+              ),
+              
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller.reviewController,
+                style: const TextStyle(color: Colors.black), 
+                decoration: const InputDecoration(
+                  labelText: "Your Comment",
+                  labelStyle: TextStyle(color: Colors.grey),
+                  hintText: "Tell us what you liked...",
+                  hintStyle: TextStyle(color: Colors.black38),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.primary)),
+                ),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: controller.submitReview,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text("Submit Review", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
   
   Widget _buildBottomButtons(ItemViewController controller) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -543,7 +737,7 @@ class ItemViewScreen extends StatelessWidget {
               child: const Text(
                 'Buy Now',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.secondary, 
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

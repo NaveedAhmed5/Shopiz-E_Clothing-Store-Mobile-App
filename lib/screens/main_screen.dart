@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'home_screen.dart';
 import 'shopping_screen.dart'; 
+import 'wishlist_screen.dart';
+import 'cart_screen.dart'; // Import Cart Screen
+import 'profile_screen.dart'; // Import Profile Screen
 import '../constants.dart';
 
 // --- MAIN CONTROLLER ---
@@ -31,9 +34,9 @@ class MainScreen extends StatelessWidget {
     final List<Widget> pages = [
       const HomeScreen(),
       const ShoppingScreen(), // 1: Shop
-      const Scaffold(backgroundColor: AppColors.background, body: Center(child: Text("Wishlist Screen", style: TextStyle(color: AppColors.textPrimary)))), // 2: Wishlist
-      const Scaffold(backgroundColor: AppColors.background, body: Center(child: Text("Cart Screen", style: TextStyle(color: AppColors.textPrimary)))),     // 3: Cart
-      const Scaffold(backgroundColor: AppColors.background, body: Center(child: Text("Profile Screen", style: TextStyle(color: AppColors.textPrimary)))),  // 4: Profile
+      const WishlistScreen(), // 2: Wishlist
+      const CartScreen(),     // 3: Cart (Now Connected)
+      const ProfileScreen(),  // 4: Profile
     ];
 
     return WillPopScope(
