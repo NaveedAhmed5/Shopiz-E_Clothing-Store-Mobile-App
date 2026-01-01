@@ -8,17 +8,17 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.primary, // Red Background
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.secondary), // Gold Icon
           onPressed: () => Get.back(),
         ),
         title: const Text(
           "Create Account",
-          style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppColors.secondary, fontWeight: FontWeight.bold), // Gold Title
         ),
         centerTitle: true,
       ),
@@ -26,21 +26,23 @@ class SignupScreen extends StatelessWidget {
         padding: const EdgeInsets.all(25.0),
         children: [
           Center(
-            child: Image.asset('assets/images/Shopiz_Logo.png', height: 80),
+            child: Image.asset('assets/images/Shopiz_Logo.png', height: 80, color: AppColors.secondary), // Gold Logo
           ),
           const SizedBox(height: 20),
           const Text(
             "Join Shopiz",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+              color: AppColors.secondary, // Gold Text
             ),
           ),
           const SizedBox(height: 10),
           const Text(
             "Enter your details to get started",
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.secondary, fontSize: 16), // Gold Text
           ),
           const SizedBox(height: 30),
 
@@ -68,12 +70,14 @@ class SignupScreen extends StatelessWidget {
               // Logic for Signup will go here
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.secondary, // Gold Button
+              foregroundColor: AppColors.primary,   // Red Text
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
+              elevation: 5,
+              shadowColor: Colors.black.withOpacity(0.3),
             ),
             child: const Text(
               "SIGN UP",
@@ -88,15 +92,16 @@ class SignupScreen extends StatelessWidget {
             children: [
               const Text(
                 "Already have an account? ",
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: AppColors.secondary), // Gold Text
               ),
               GestureDetector(
                 onTap: () => Get.back(),
                 child: const Text(
                   "Log In",
                   style: TextStyle(
-                    color: AppColors.primary,
+                    color: Colors.white, // White for contrast link
                     fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
@@ -116,23 +121,23 @@ class SignupScreen extends StatelessWidget {
       obscureText: isPassword,
       style: const TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: AppColors.textSecondary),
-        prefixIcon: Icon(icon, color: AppColors.textSecondary),
+        hintText: label,
+        hintStyle: const TextStyle(color: AppColors.textSecondary),
+        prefixIcon: Icon(icon, color: AppColors.primary), // Red Icon
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderSide: const BorderSide(color: AppColors.secondary), // Gold Border
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderSide: const BorderSide(color: Colors.transparent),
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: AppColors.secondary, width: 2), // Gold Focus
         ),
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: Colors.white, // White Box
       ),
     );
   }

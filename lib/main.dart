@@ -63,16 +63,6 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: Image.asset(
@@ -95,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            const CircularProgressIndicator(color: AppColors.primary),
+            const CircularProgressIndicator(color: AppColors.secondary),
           ],
         ),
       ),
